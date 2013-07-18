@@ -20,7 +20,7 @@
 
 
 var ERR = require("async-stacktrace");
-var db = require("./DB").db;
+var db = require("./DB").session_db;
 var async = require("async");
 var authorManager = require("./AuthorManager");
 var padManager = require("./PadManager");
@@ -125,11 +125,15 @@ exports.checkAccess = function (padID, sessionCookie, token, password, callback)
             return;
           }
           
+          //console.log("sessionInfo cookie " + sessionCookie);
+
           var sessionIDs = sessionCookie.split(',');
           async.forEach(sessionIDs, function(sessionID, callback)
           {
             sessionManager.getSessionInfo(sessionID, function(err, sessionInfo)
             {
+              //console.log("sessionInfo" + sessionID);
+              //console.log(sessionInfo);
               //skip session if it doesn't exist
               if(err && err.message == "sessionID does not exist")
               {
@@ -161,7 +165,7 @@ exports.checkAccess = function (padID, sessionCookie, token, password, callback)
               // There is a valid session
               validSession = true;
               sessionAuthor = sessionInfo.authorID;
-              
+
               callback();
             });
           }, callback);

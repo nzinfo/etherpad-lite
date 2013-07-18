@@ -34,7 +34,7 @@ exports.basicAuth = function (req, res, next) {
       var userpass = new Buffer(req.headers.authorization.split(' ')[1], 'base64').toString().split(":")
       var username = userpass[0];
       var password = userpass[1];
-
+      //console.log(username + ":" + password);
       if (settings.users[username] != undefined && settings.users[username].password == password) {
         settings.users[username].username = username;
         req.session.user = settings.users[username];

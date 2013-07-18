@@ -8,6 +8,7 @@ var Changeset = require("ep_etherpad-lite/static/js/Changeset");
 var AttributePool = require("ep_etherpad-lite/static/js/AttributePool");
 var randomString = require('ep_etherpad-lite/static/js/pad_utils').randomString;
 var db = require("./DB").db;
+var session_db = require("./DB").session_db;
 var async = require("async");
 var settings = require('../utils/Settings');
 var authorManager = require("./AuthorManager");

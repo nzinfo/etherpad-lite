@@ -26,10 +26,30 @@ var log4js = require('log4js');
 //set database settings
 var db = new ueberDB.database(settings.dbType, settings.dbSettings, null, log4js.getLogger("ueberDB"));
 
+var session_db = null;
+
+var dirty_fs_db = require("./fs_dirty_db");
+
+if(settings.dbSettings.variety && settings.dbSettings.variety=="fs") {
+  // hot fix.
+  // console.log('11111111111111111 fix');
+  db.db_module  =  dirty_fs_db;
+
+  // check session db
+  if(settings.dbSettings.session_base) {
+    var s = settings.dbSettings.session_base;
+    // console.log('create database ' + s.dbType);
+    session_db = new ueberDB.database(s.dbType, s.dbSettings, null, log4js.getLogger("ueberDB"));
+    session_db.__marker = 'hello';
+  }
+}
+
+
 /**
  * The UeberDB Object that provides the database functions
  */
 exports.db = null;
+exports.session_db = null;
 
 /**
  * Initalizes the database with the settings provided by the settings module
@@ -51,7 +71,28 @@ exports.init = function(callback)
     else
     {
       exports.db = db;  
-      callback(null);
+      // init session base
+      if(session_db) {
+        //console.log('use session db.');
+        session_db.init(function(err) {
+            //there was an error while initializing the database, output it and stop 
+            if(err)
+            {
+              console.error("ERROR: Problem while initalizing the database");
+              console.error(err.stack ? err.stack : err);
+              process.exit(1);
+            }
+            //everything ok
+            else
+            {
+              exports.session_db = session_db;  
+              callback(null);
+            }
+        }); // should never wrong.
+      }else{
+        exports.session_db = db; 
+        callback(null); 
+      }
     }
   });
 }

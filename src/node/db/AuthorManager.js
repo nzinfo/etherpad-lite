@@ -18,9 +18,8 @@
  * limitations under the License.
  */
 
-
 var ERR = require("async-stacktrace");
-var db = require("./DB").db;
+var db = require("./DB").session_db;
 var async = require("async");
 var randomString = require('ep_etherpad-lite/static/js/pad_utils').randomString;
 
@@ -48,6 +47,7 @@ exports.doesAuthorExists = function (authorID, callback)
  */
 exports.getAuthor4Token = function (token, callback)
 {
+  //console.trace("Here I am!");
   mapAuthorWithDBKey("token2author", token, function(err, author)
   {
     if(ERR(err, callback)) return;
@@ -90,7 +90,8 @@ function mapAuthorWithDBKey (mapperkey, mapper, callback)
   db.get(mapperkey + ":" + mapper, function (err, author)
   {
     if(ERR(err, callback)) return;
-  
+    
+    console.log('get mapping ' + mapperkey + ":" + mapper);
     //there is no author with this mapper, so create one
     if(author == null)
     {
@@ -124,13 +125,17 @@ function mapAuthorWithDBKey (mapperkey, mapper, callback)
 exports.createAuthor = function(name, callback)
 {
   //create the new author name
-  var author = "a." + randomString(16);
-        
+  //var author = "a." + randomString(16);
+  var author =  "a." + name;
+  //var stack = traceback();
+  //console.log(stack);
+  //console.trace("Here I am!")
+  
   //create the globalAuthors db entry
   var authorObj = {"colorId" : Math.floor(Math.random()*32), "name": name, "timestamp": new Date().getTime()};
         
   //set the global author db entry
-  db.set("globalAuthor:" + author, authorObj);
+  db.set("globalAuthor:" + author, authorObj);1
   
   callback(null, {authorID: author});
 }

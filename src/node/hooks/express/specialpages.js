@@ -6,6 +6,7 @@ exports.expressCreateServer = function (hook_name, args, cb) {
   //serve index.html under /
   args.app.get('/', function(req, res)
   {
+     // console.log(req.session.user); -- coreseek here mark a user... should change to req.user ?
     res.send(eejs.require("ep_etherpad-lite/templates/index.html"));
   });
 
@@ -45,8 +46,8 @@ exports.expressCreateServer = function (hook_name, args, cb) {
       //there is no custom favicon, send the default favicon
       if(err)
       {
-	filePath = path.normalize(__dirname + "/../../../static/favicon.ico");
-	res.sendfile(filePath);
+      	filePath = path.normalize(__dirname + "/../../../static/favicon.ico");
+      	res.sendfile(filePath);
       }
     });
   });

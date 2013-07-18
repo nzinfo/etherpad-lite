@@ -22,11 +22,12 @@
 var ERR = require("async-stacktrace");
 var customError = require("../utils/customError");
 var randomString = require('ep_etherpad-lite/static/js/pad_utils').randomString;
-var db = require("./DB").db;
+var db = require("./DB").session_db;
 var async = require("async");
 var groupMangager = require("./GroupManager");
 var authorMangager = require("./AuthorManager");
- 
+
+
 exports.doesSessionExist = function(sessionID, callback)
 {
   //check if the database entry of this session exists

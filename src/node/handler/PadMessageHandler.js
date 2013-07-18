@@ -885,6 +885,7 @@ function handleClientReady(client, message)
       // our "sessions" "connections".
       // FIXME: Use a hook instead
       // FIXME: Allow to override readwrite access with readonly
+      //console.log(message);
       securityManager.checkAccess (padIds.padId, message.sessionID, message.token, message.password, function(err, statusObject)
       {
         if(ERR(err, callback)) return;

@@ -7,7 +7,7 @@
 var Store = require('ep_etherpad-lite/node_modules/connect/lib/middleware/session/store'),
   utils = require('ep_etherpad-lite/node_modules/connect/lib/utils'),
   Session = require('ep_etherpad-lite/node_modules/connect/lib/middleware/session/session'),
-  db = require('ep_etherpad-lite/node/db/DB').db,
+  db = require('ep_etherpad-lite/node/db/DB').session_db,
   log4js = require('ep_etherpad-lite/node_modules/log4js'),
   messageLogger = log4js.getLogger("SessionStore");
 
@@ -35,6 +35,7 @@ SessionStore.prototype.get = function(sid, fn){
 
 SessionStore.prototype.set = function(sid, sess, fn){
   messageLogger.debug('SET ' + sid);
+  // console.log(sess);  //sess.user -> the user corrponding to session.
   db.set("sessionstorage:" + sid, sess);
   process.nextTick(function(){
     if(fn) fn();
