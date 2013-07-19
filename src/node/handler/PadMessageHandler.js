@@ -209,6 +209,7 @@ exports.handleMessage = function(client, message)
       //check permissions
       function(callback)
       {
+        //console.log(client);
         // client tried to auth for the first time (first msg from the client)
         if(message.type == "CLIENT_READY") {
           // Remember this information since we won't
@@ -238,6 +239,8 @@ exports.handleMessage = function(client, message)
           callback();
         }else{
           var auth = sessioninfos[client.id].auth;
+          //console.log(auth);
+
           securityManager.checkAccess(auth.padID, auth.sessionID, auth.token, auth.password, function(err, statusObject)
           {
             if(ERR(err, callback)) return;
@@ -885,6 +888,7 @@ function handleClientReady(client, message)
       // our "sessions" "connections".
       // FIXME: Use a hook instead
       // FIXME: Allow to override readwrite access with readonly
+      //console.log("pad message dump.");
       //console.log(message);
       securityManager.checkAccess (padIds.padId, message.sessionID, message.token, message.password, function(err, statusObject)
       {
@@ -893,6 +897,7 @@ function handleClientReady(client, message)
         //access was granted
         if(statusObject.accessStatus == "grant")
         {
+          //console.log("auid="+statusObject.authorID);
           author = statusObject.authorID;
           callback();
         }

@@ -51,6 +51,8 @@ var gritter = require('./gritter').gritter;
 
 var hooks = require('./pluginfw/hooks');
 
+console.log("origin:"+document.cookie);
+
 function createCookie(name, value, days, path){ /* Warning Internet Explorer doesn't use this it uses the one from pad_utils.js */
   if (days)
   {
@@ -187,12 +189,19 @@ function handshake()
     var token = readCookie("token");
     if (token == null)
     {
-      token = "t." + randomString();
+      token = "t." + randomString(); // coreseek , here genereate token @client side.
       createCookie("token", token, 60);
+    }else{
+      // alert("get token:" +token);
     }
     
+    var ss = (readCookie("sessionID"));
+    // alert('get sessionID='+ss);
+    // console.log(document.cookie);
+
     var sessionID = decodeURIComponent(readCookie("sessionID"));
     var password = readCookie("password");
+    //alert(sessionID);
 
     var msg = {
       "component": "pad",

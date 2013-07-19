@@ -25,11 +25,13 @@ var async = require("async");
 var authorManager = require("./AuthorManager");
 var padManager = require("./PadManager");
 var sessionManager = require("./SessionManager");
+var ueberStore = require("./SessionStore");
 var settings = require("../utils/Settings");
 var randomString = require('ep_etherpad-lite/static/js/pad_utils').randomString;
 var log4js = require('log4js');
 var authLogger = log4js.getLogger("auth");
 
+var sessionStore = new ueberStore();
 /**
  * This function controlls the access to a pad, it checks if the user can access a pad.
  * @param padID the pad the user wants to access
@@ -58,8 +60,13 @@ exports.checkAccess = function (padID, sessionCookie, token, password, callback)
     // it's not a group pad, means we can grant access
     if(padID.indexOf("$") == -1)
     {
+      // load user info from session. -> coreseek testing , fetch user info.
+      sessionStore.get(sessionCookie, function(err, sess) {
+          var uName = 'anonymous';
+          if(sess)
+            uName = sess.user.username;
       //get author for this token
-      authorManager.getAuthor4Token(token, function(err, author)
+      authorManager.getAuthor4Token(token, uName, function(err, author)
       {
         if(ERR(err, callback)) return;
         
@@ -86,7 +93,8 @@ exports.checkAccess = function (padID, sessionCookie, token, password, callback)
           callback(null, statusObject);
         }
       });
-      
+
+      }) ; //  coreseek testing..
       //don't continue
       return;
     }
@@ -132,8 +140,8 @@ exports.checkAccess = function (padID, sessionCookie, token, password, callback)
           {
             sessionManager.getSessionInfo(sessionID, function(err, sessionInfo)
             {
-              //console.log("sessionInfo" + sessionID);
-              //console.log(sessionInfo);
+              console.log("sessionInfo" + sessionID);
+              console.log(sessionInfo);
               //skip session if it doesn't exist
               if(err && err.message == "sessionID does not exist")
               {
@@ -174,7 +182,7 @@ exports.checkAccess = function (padID, sessionCookie, token, password, callback)
         function(callback)
         {
           //get author for this token
-          authorManager.getAuthor4Token(token, function(err, author)
+          authorManager.getAuthor4Token(token, null, function(err, author)
           {
             if(ERR(err, callback)) return;
             tokenAuthor = author;

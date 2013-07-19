@@ -28,6 +28,8 @@ exports.expressCreateServer = function (hook_name, args, cb) {
       }
 
       data.sessionID = data.signedCookies.express_sid;
+      //console.log('auth session id ='+data.sessionID);
+      
       args.app.sessionStore.get(data.sessionID, function (err, session) {
         if (err || !session) return accept('Bad session / session has expired', false);
         data.session = new connect.middleware.session.Session(data, session);

@@ -45,10 +45,10 @@ exports.doesAuthorExists = function (authorID, callback)
  * @param {String} token The token 
  * @param {Function} callback callback (err, author) 
  */
-exports.getAuthor4Token = function (token, callback)
+exports.getAuthor4Token = function (token, default_name, callback)
 {
   //console.trace("Here I am!");
-  mapAuthorWithDBKey("token2author", token, function(err, author)
+  mapAuthorWithDBKey("token2author", token, default_name, function(err, author)
   {
     if(ERR(err, callback)) return;
     //return only the sub value authorID
@@ -64,7 +64,7 @@ exports.getAuthor4Token = function (token, callback)
  */
 exports.createAuthorIfNotExistsFor = function (authorMapper, name, callback)
 {
-  mapAuthorWithDBKey("mapper2author", authorMapper, function(err, author)
+  mapAuthorWithDBKey("mapper2author", authorMapper, name, function(err, author)
   {
     if(ERR(err, callback)) return;
     
@@ -84,18 +84,18 @@ exports.createAuthorIfNotExistsFor = function (authorMapper, name, callback)
  * @param {String} mapper The mapper
  * @param {Function} callback callback (err, author) 
  */
-function mapAuthorWithDBKey (mapperkey, mapper, callback)
+function mapAuthorWithDBKey (mapperkey, mapper, name, callback)
 {  
   //try to map to an author
   db.get(mapperkey + ":" + mapper, function (err, author)
   {
     if(ERR(err, callback)) return;
     
-    console.log('get mapping ' + mapperkey + ":" + mapper);
+    // console.log('get mapping ' + mapperkey + ":" + mapper);
     //there is no author with this mapper, so create one
     if(author == null)
     {
-      exports.createAuthor(null, function(err, author)
+      exports.createAuthor(name, function(err, author)
       {
         if(ERR(err, callback)) return;
         
@@ -135,7 +135,7 @@ exports.createAuthor = function(name, callback)
   var authorObj = {"colorId" : Math.floor(Math.random()*32), "name": name, "timestamp": new Date().getTime()};
         
   //set the global author db entry
-  db.set("globalAuthor:" + author, authorObj);1
+  db.set("globalAuthor:" + author, authorObj);
   
   callback(null, {authorID: author});
 }

@@ -276,6 +276,7 @@ exports.deleteSession = function(sessionID, callback)
   ], function(err)
   {
     if(ERR(err, callback)) return;
+    //console.log(callback);
     callback();
   })
 }
@@ -357,6 +358,7 @@ function listSessionsWithDBKey (dbkey, callback)
   ], function(err)
   {
     if(ERR(err, callback)) return;
+    //console.log(callback);
     callback(null, sessions);
   });
 }

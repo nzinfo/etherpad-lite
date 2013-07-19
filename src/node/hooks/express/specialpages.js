@@ -3,10 +3,23 @@ var eejs = require('ep_etherpad-lite/node/eejs');
 
 exports.expressCreateServer = function (hook_name, args, cb) {
 
+  var save_session = function(req, res) {
+      var cookie = req.session.cookie;
+      var bHttpSetting = cookie.httpOnly;
+      cookie.httpOnly = false;
+      var val = cookie.serialize("sessionID", req.sessionID);
+      cookie.httpOnly = bHttpSetting;
+      //console.log('set-cookie %s', val);
+      res.setHeader('Set-Cookie', val);
+  }
   //serve index.html under /
   args.app.get('/', function(req, res)
   {
-     // console.log(req.session.user); -- coreseek here mark a user... should change to req.user ?
+    //console.log(req.session);  //-- coreseek here mark a user... should change to req.user ?
+    //console.log(req.sessionID);
+    //console.log(req.session.cookie);
+    //req.session.cookie
+    save_session(req, res);
     res.send(eejs.require("ep_etherpad-lite/templates/index.html"));
   });
 
@@ -27,14 +40,16 @@ exports.expressCreateServer = function (hook_name, args, cb) {
 
   //serve pad.html under /p
   args.app.get('/p/:pad', function(req, res, next)
-  {    
-    res.send(eejs.require("ep_etherpad-lite/templates/pad.html", {req: req}));
+  {
+      save_session(req, res);
+      res.send(eejs.require("ep_etherpad-lite/templates/pad.html", {req: req}));
   });
 
   //serve timeslider.html under /p/$padname/timeslider
   args.app.get('/p/:pad/timeslider', function(req, res, next)
   {
-    res.send(eejs.require("ep_etherpad-lite/templates/timeslider.html", {req: req}));
+      save_session(req, res);
+      res.send(eejs.require("ep_etherpad-lite/templates/timeslider.html", {req: req}));
   });
 
   //serve favicon.ico from all path levels except as a pad name
